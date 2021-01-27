@@ -85,6 +85,12 @@ app.put("/collection/:collectionName/:id", (req, res, next) => {
     else next();
     });
     });
+    app.use(function(req, res) {
+      // Sets the status code to 404
+      res.status(404);
+      // Sends the error "File does not exist!”
+      res.send("File does not exist!");
+      });
 
 const port = process.env.PORT || 4000;
 
