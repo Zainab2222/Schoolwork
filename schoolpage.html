@@ -1,0 +1,182 @@
+<html>
+    <head>
+        <title>Available Lessons</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="lessons.js/lessons.js"></script>
+        
+    </head>
+
+    <body>
+        <div id="app">
+            <header>
+                <h1> {{ sitename }} </h1>
+                
+                <p>
+                    <strong>Sort:</strong> 
+                        <input type="checkbox" disabled value ="sort.AV">Availability</input>
+                        <input type="checkbox" disabled value="sort.LC">Location</input>
+                        <input type="checkbox" v-bind:value="sort.PR">Price</input>
+                        </select>
+                </p>
+
+                <div v-if="!showLesson"></div>
+                <button @click='showCheckout' v-if="!showLesson">  
+                <span class ="fa fa-arrow-left"></span> Go back </button>
+
+                <button  @click='showCheckout' v-else > {{cartItemCount}} <span class ="fa fa-cart-plus" ></span> Shopping cart </button> 
+        
+                </header>
+
+            <main>
+
+                <div v-if='showLesson' >
+                    <!--Using the for loop we are looping through the return of the sortedLesson computed property-->
+                    <!--This will give us a list sorted by Price-->
+                    <div v-for="lesson in sortedLessons">
+                    <img v-bind:src="lesson.image" style="width: 15%; height: 26%;">
+                    <div style="display: inline-block"  >
+                        <h3>Subject: {{lesson.subject}} </h3>
+				        <p>Location: {{lesson.location}} </p>
+			        	<p>Price: {{lesson.price}} </p>
+                        <p>Number of Spaces: {{lesson.numberOfSpaces - cartCount(lesson.id)}}</p>
+                     
+                        <!-- The button will display when 'Add to Cart is True -->                        
+                        <!--When we click the Add To Cart are now passing the lesson and its id to the function as parameters-->
+                         <button @click='addToCart(lesson)' class="btn" v-if='canAddToCart(lesson)'> Add to Cart </button>
+
+                        <!-- This button will be disabled otherwise -->
+                        <button disabled ='disabled'class="btn" v-else>Add to Cart</button>
+                    </div>
+               </div>  
+               </div>
+
+            <div v-else>
+                <h3> Items in Cart: {{cartItemCount}} </h3>
+               
+                <li v-for="(item, index) in cart" :key="index"> <span>{{item}}</span>
+                <button @click="deleteFromList(index)">remove</button></li>
+
+                <h1>Checkout</h1>
+
+                <p>
+                    <strong>Name:</strong>
+                    <!-- This input field is bound to 'firstName' in the 'order' object -->
+                    <input v-model="order.name"/>
+                </p>
+                <p>
+                    <strong>Phone:</strong>
+                    <!-- This input field is bound to 'lastName' in the 'order' object -->
+                    <input v-model='order.phone' type="number"/>
+                </p>
+
+                <h2>Order Information</h2>
+                <p>Name:{{order.name}}</p>
+                <p>Phone: {{order.phone}}</p>
+                <button v-on:click="submitForm">Checkout</button>
+            </div>
+            </main>
+      
+    </body>
+
+    <script>
+        var webstore = new Vue({
+            el: '#app',
+            data: {
+                showLesson: true,
+                showCart: true,
+                show: true,
+                sitename: 'New Lessons',
+                isHidden: true,
+                id:{
+                    L1:'1001', 
+                    L2:'1002', 
+                    L3:'1003', 
+                    L4:'1004', 
+                    L5:'1005', 
+                    L6:'1006', 
+                    L7:'1007', 
+                    L8:'1008',
+                    L9:'1009',
+                    L10:'1010',
+            },
+                cart: [], // array to store items in shopping cart,
+                availableInventory: 5,
+                sort:{
+                   PR: 'Price',
+                   LC: 'Location',
+                   AV: 'Availabilty',
+            },
+                order: {
+                    fullName: "",
+                    phone: "",
+                },
+                lessons: [],
+            },
+            methods:{
+                addToCart: function (lesson) {
+                    this.cart.push(lesson.subject);
+                },
+                deleteFromList(index){
+                    this.cart.splice(index, 1);
+                },
+                addToCheckOutCart(lesson){
+                    this.addToCheckOutCart.push(lesson);
+                },
+                showCheckout: function(){
+                    this.showLesson = this.showLesson ? false : true;
+                },     
+                 submitForm(){
+                    alert('order has been placed')
+                },
+ 
+                //We are now working with an array of objects and therefore need to pass the lesson
+                //and its id to identify which lesson we are working with
+                  canAddToCart: function(lesson){
+                    return lesson.availableInventory > this.cartCount(lesson.subject);
+                },
+                //We introduce the cartCount Method to count the number of items of a particular type in the cart
+                cartCount(id){
+                    let count = 0;
+                    for (let i = 0; i < this.cart.length; i++){
+                        if(this.cart[i] === id){
+                            count++
+                        }
+                    }
+                    return count;
+                }
+            },
+            computed: {
+                cartItemCount: function(){
+                    return this.cart.length;
+                },
+                // canAddToCart: function(lesson){
+                //     return this.lesson.availableInventory > this.cartItemCount(lesson.id);
+                // },
+
+                //We are sorting lessons by price
+                sortedLessons(){
+                    let lessonsArray = this.lessons.slice(0);
+                    function compare (a, b){
+                        if(a.price > b.price)
+                        return 1;
+                        if (a.price < b.price)
+                        return -1;
+                        return 0;
+                    }
+                    return lessonsArray.sort(compare);
+                }
+            },
+            created: function() {
+            // Fetch lessons from database
+            fetch("http://localhost:4000/collection/lesson").then(function (res) {
+            res.json().then(function (results) {
+            // save the returned JSON object to 'product'
+            // note that we used 'lesson.product' instead of 'this.product'
+            webstore.lessons = results;
+            });
+        });
+        },
+        });
+    </script>
+ </html>
