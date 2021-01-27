@@ -62,6 +62,32 @@ app.put("/collection/:collectionName/:id", (req, res, next) => {
   );
 });
 
+   // Static file middleware
+    var path = require("path");
+    var fs = require("fs");
+
+    app.use(function(req, res, next) {
+    // Uses path.join to find the path where the file should be
+    var images = path.join(__dirname, 
+    "images"
+    , req.url);
+    // Built-in fs.stat gets info about a file
+    fs.stat(images, function(err, fileInfo) {
+    if (err) {
+    next();
+    return;
+    }
+    if (fileInfo.isFile()) res.sendFile(images);
+    else next();
+    });
+    });
+
+    app.use(function(req, res) {
+      // Sets the status code to 404
+      res.status(404);
+      // Sends the error "File does not exist!”
+      res.send("File does not exist!");
+      });
 
 const port = process.env.PORT || 4000;
 
