@@ -66,6 +66,7 @@ app.put("/collection/:collectionName/:id", (req, res, next) => {
     }
   );
 });
+   // Static file middleware
     var path = require("path");
     var fs = require("fs");
 
