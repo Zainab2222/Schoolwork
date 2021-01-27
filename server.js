@@ -10,6 +10,9 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.get("/lessons",function(req,res){
+  const lesson = []
+
 
 // connect to MongoDB
 const MongoClient = require("mongodb").MongoClient;
