@@ -73,7 +73,7 @@
                 <h2>Order Information</h2>
                 <p>Name:{{order.name}}</p>
                 <p>Phone: {{order.phone}}</p>
-                <button v-on:click="submitForm">Checkout</button>
+                <button v-on:click="submitForm()">Checkout</button>
             </div>
             </main>
       
@@ -129,7 +129,15 @@
                  submitForm(){
                     alert('order has been placed')
                 },
- 
+                placeOrder(){
+                    let placeOrder = this.cart.map((item) => {
+                        return {
+                            id: this.cart[item].id,
+                            numberOfSpaces: this.cart[item].qty,
+                            subject: this.cart[item].subject
+                        };
+                    });
+                },
                 //We are now working with an array of objects and therefore need to pass the lesson
                 //and its id to identify which lesson we are working with
                   canAddToCart: function(lesson){
