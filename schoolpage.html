@@ -61,19 +61,19 @@
 
                 <p>
                     <strong>Name:</strong>
-                    <!-- This input field is bound to 'firstName' in the 'order' object -->
+                    <!-- This input field is bound to 'name' in the 'order' object -->
                     <input v-model="order.name"/>
                 </p>
                 <p>
                     <strong>Phone:</strong>
-                    <!-- This input field is bound to 'lastName' in the 'order' object -->
+                    <!-- This input field is bound to 'phone' in the 'order' object -->
                     <input v-model='order.phone' type="number"/>
                 </p>
 
                 <h2>Order Information</h2>
                 <p>Name:{{order.name}}</p>
                 <p>Phone: {{order.phone}}</p>
-                <button v-on:click="submitForm()">Checkout</button>
+                <button v-on:click="ordering()">Checkout</button>
             </div>
             </main>
       
@@ -108,7 +108,7 @@
                    AV: 'Availabilty',
             },
                 order: {
-                    fullName: "",
+                    name: "",
                     phone: "",
                 },
                 lessons: [],
@@ -129,14 +129,27 @@
                  submitForm(){
                     alert('order has been placed')
                 },
-                placeOrder(){
-                    let placeOrder = this.cart.map((item) => {
+                ordering(){
+                    let Ordering = this.cart.map((item) => {
                         return {
                             id: this.cart[item].id,
                             numberOfSpaces: this.cart[item].qty,
                             subject: this.cart[item].subject
                         };
                     });
+                    const newLesson = {
+                        name: this.user.name,
+                        phone: this.user.phone,
+                        orderInfo: ordering,
+                    };
+                fetch("http://localhost:4000/collection/order", {
+                    method: "POST", //set HTTP method as 'POST'
+                    headers: {
+                        "Content-Type": "application/json", //set data type as JSON
+                    },
+                    body: JSON.stringify(newLesson), //need to stringifynthe JSON object
+                });
+                alert("Dear " + this.user.name + "your order has been placed, thank you");
                 },
                 //We are now working with an array of objects and therefore need to pass the lesson
                 //and its id to identify which lesson we are working with
