@@ -3,7 +3,7 @@
         <title>Available Lessons</title>
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <script src="lessons.js/lessons.js"></script>
+
         
     </head>
 
@@ -73,7 +73,7 @@
                 <h2>Order Information</h2>
                 <p>Name:{{order.name}}</p>
                 <p>Phone: {{order.phone}}</p>
-                <button v-on:click="ordering()">Checkout</button>
+                <button v-on:click="submitForm()">Checkout</button>
             </div>
             </main>
       
@@ -126,21 +126,12 @@
                 showCheckout: function(){
                     this.showLesson = this.showLesson ? false : true;
                 },     
-                 submitForm(){
-                    alert('order has been placed')
-                },
-                ordering(){
-                    let Ordering = this.cart.map((item) => {
-                        return {
-                            id: this.cart[item].id,
-                            numberOfSpaces: this.cart[item].qty,
-                            subject: this.cart[item].subject
-                        };
-                    });
+                submitForm(){
+                   console.log (this.cart)
                     const newLesson = {
-                        name: this.user.name,
-                        phone: this.user.phone,
-                        orderInfo: ordering,
+                        name: this.order.name,
+                        phone: this.order.phone,
+                        orderInfo: this.cart,
                     };
                 fetch("http://localhost:4000/collection/order", {
                     method: "POST", //set HTTP method as 'POST'
@@ -149,7 +140,7 @@
                     },
                     body: JSON.stringify(newLesson), //need to stringifynthe JSON object
                 });
-                alert("Dear " + this.user.name + "your order has been placed, thank you");
+                alert("Dear " + this.order.name + " your order has been placed, thank you");
                 },
                 //We are now working with an array of objects and therefore need to pass the lesson
                 //and its id to identify which lesson we are working with
